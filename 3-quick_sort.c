@@ -1,76 +1,68 @@
 #include "sort.h"
 
 /**
-* partition - Lomutu partition scheme for quicksort algorithm
-* @a: Array to sort
-* @l: lowest index of array
-* @h: highest index of array
-* Return: index of pivot
-*/
-
-int partition(int *a, int l, int h)
+ * partition - array partition
+ * @array: array to sort
+ * @first: first position
+ * @last: last position
+ * @size: array size
+ * Return: int pivot index
+ */
+int partition(int *array, int first, int last, size_t size)
 {
-	int p, i, j, t;
-	static int size, k;
+	int i = first - 1, aux, j;
 
-	if (k == 0)
-		size = h + 1, k++;
-	p = a[h];
-	i = l;
-	for (j = l; j < h; j++)
+	for (j = first; j <= last - 1; j++)
 	{
-		if (a[j] <= p)
+		if (array[j] < array[last])
 		{
-			if (i != j)
-			{
-				t = a[i];
-				a[i] = a[j];
-				a[j] = t;
-				print_array(a, size);
-			}
 			i++;
+			if (i < j)
+			{
+				aux = array[i];
+				array[i] = array[j];
+				array[j] = aux;
+				print_array(array, size);
+			}
 		}
 	}
-	if (i != h)
+	if (array[i + 1] > array[last])
 	{
-		t = a[i];
-		a[i] = a[h];
-		a[h] = t;
-		print_array(a, size);
+		aux = array[i + 1];
+		array[i + 1] = array[last];
+		array[last] = aux;
+		print_array(array, size);
 	}
 
-	return (i);
+	return (i + 1);
 }
 
 /**
-* qs - Quicksort recurssive function
-* @a: array to sort
-* @l: lowest index
-* @h: highest index
-*/
-
-void qs(int *a, int l, int h)
+ * qs - sorts an array of integers recursively
+ * @array: array to sort
+ * @first: first position
+ * @last: last position
+ * @size: array size
+ */
+void qs(int *array, int first, int last, size_t size)
 {
-	int p;
+	int pivot;
 
-	if (l < h)
+	if (first < last)
 	{
-		p = partition(a, l, h);
-		qs(a, l, p - 1);
-		qs(a, p + 1, h);
+		pivot = partition(array, first, last, size);
+		qs(array, first, pivot - 1, size);
+		qs(array, pivot + 1, last, size);
 	}
 }
 
-
 /**
-* quick_sort - sorts array using quicksort algorithm
-* @array: Array to sort
-* @size: Size of array to sort
-*/
-
+ * quick_sort - sorts an array of integers using the Quick
+ * sort algorithm in ascending order
+ * @array: array to sort
+ * @size: array size
+ */
 void quick_sort(int *array, size_t size)
 {
-	if (array == NULL)
-		return;
-	qs(array, 0, size - 1);
+	qs(array, 0, size - 1, size);
 }
