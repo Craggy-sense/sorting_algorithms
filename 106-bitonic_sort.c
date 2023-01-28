@@ -1,6 +1,4 @@
 #include "sort.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 void compare_and_swap(int *a, int *b) {
     if (*a > *b) {
