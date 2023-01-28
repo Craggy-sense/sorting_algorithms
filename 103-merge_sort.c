@@ -1,84 +1,132 @@
 #include "sort.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 /**
-* merge - Merges the splits from merge_sorty
-* @array: Array split to merge
-* @low: lowest index of split
-* @middle: middle index of split
-* @high: high index of split
-* @temp: temp array for merging
-*/
-
-void merge(int *array, int low, int middle, int high, int *temp)
+ * print_left_right - print left and right partitions
+ * @array: array
+ * @size: size of second array
+ * @first: initial position
+ * @mid: middle position
+ */
+void print_left_right(int *array, int size, int first, int mid)
 {
-	int i, j, k, l = 0, r = 0, n, left[4096], right[4096];
+	int k;
 
 	printf("Merging...\n");
-	i = low, j = middle + 1, k = l = 0;
-	while (i <= middle && j <= high)
-	{
-		if (array[i] <= array[j])
-			temp[k] = left[l] = array[i], k++, i++, l++;
-		else
-			temp[k] = right[r] = array[j], k++, j++, r++;
-	}
-	while (i <= middle)
-		temp[k] = left[l] = array[i], k++, i++, l++;
-	while (j <= high)
-		temp[k] = right[r] = array[j], k++, j++, r++;
 	printf("[left]: ");
-	for (n = 0; n < l; n++)
-		(n == 0) ? printf("%d", left[n]) : printf(", %d", left[n]);
-	printf("\n[right]: ");
-	for (n = 0; n < r; n++)
-		(n == 0) ? printf("%d", right[n]) : printf(", %d", right[n]);
-	printf("\n[Done]: ");
-	for (i = low; i <= high; i++)
+	k = first;
+	while (k < mid)
 	{
-		array[i] = temp[i - low], printf("%d", array[i]);
-		if (i != high)
-			printf(", ");
+		if (k != mid - 1)
+			printf("%d, ", array[k]);
 		else
-			printf("\n");
+			printf("%d\n", array[k]);
+		k++;
 	}
-}
 
-/**
-* merge_sorty - recurrsive function utilizing merge sort algo
-* @array: Array
-* @low: Lowest index of split
-* @high: highest index of split
-* @temp: temp array for mergin
-*/
-
-void merge_sorty(int *array, int low, int high, int *temp)
-{
-	int middle;
-
-	if (low < high)
+	printf("[right]: ");
+	k = mid;
+	while (k < size)
 	{
-		middle = ((high + low - 1) / 2);
-		merge_sorty(array, low, middle, temp);
-		merge_sorty(array, middle + 1, high, temp);
-		merge(array, low, middle, high, temp);
+		if (k < size - 1)
+			printf("%d, ", array[k]);
+		else
+			printf("%d\n", array[k]);
+		k++;
 	}
 }
 
 /**
-* merge_sort - Sorts array with merge sort algo
-* @array: array to sort
-* @size: Size of array to sort
-*/
+ * merge - merge the values in the position of array
+ * @array: first array
+ * @size: size of second array
+ * @cpy: copy of array
+ * @first: initial position
+ * @mid: middle position
+ * first one of the second array
+ */
+void merge(int *array, int size, int first, int mid, int *cpy)
+{
+	int i, j, k;
 
+	print_left_right(array, size, first, mid);
+
+	i = first;
+	j = mid;
+
+	printf("[Done]: ");
+	k = first;
+	while (k < size)
+	{
+		if (i < mid && (j >= size || array[i] <= array[j]))
+		{
+			cpy[k] = array[i];
+			i++;
+		}
+		else
+		{
+			cpy[k] = array[j];
+			j++;
+		}
+		if (k < size - 1)
+			printf("%d, ", cpy[k]);
+		else
+			printf("%d\n", cpy[k]);
+		k++;
+	}
+}
+/**
+ * mergeSort - array separator
+ * @cpy: copy of array
+ * @first: initial position
+ * @size: size of the original  array
+ * @array: the original array
+ */
+void mergeSort(int *cpy, int first, int size, int *array)
+{
+	int mid;
+
+	if (size - first < 2)
+		return;
+
+	mid = (size + first) / 2;
+
+	mergeSort(array, first, mid, cpy);
+	mergeSort(array, mid, size, cpy);
+
+	merge(cpy, size, first, mid, array);
+}
+/**
+ * copy_array - copy array of int
+ * @arr: array src
+ * @cpy: array dest
+ * @size : array size
+ */
+void copy_array(int *arr, int *cpy, int size)
+{
+	int i;
+
+	for (i = 0; i < (int)size; i++)
+		cpy[i] = arr[i];
+}
+
+/**
+ * merge_sort - create partition and copy
+ * @array: array
+ * @size : array size
+ */
 void merge_sort(int *array, size_t size)
 {
-	int *temp;
+	int *cpy;
 
-	if (array == NULL || size < 2)
+	cpy = malloc(sizeof(int) * size - 1);
+
+	if (cpy == NULL)
 		return;
-	temp = malloc(sizeof(int) * (size + 1));
-	if (temp == NULL)
-		return;
-	merge_sorty(array, 0, size - 1, temp);
-	free(temp);
+
+	copy_array(array, cpy, size);
+
+	mergeSort(cpy, 0, size, array);
+	free(cpy);
 }
